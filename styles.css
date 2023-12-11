@@ -1,0 +1,7 @@
+.todoarea{
+    display: flex;
+    flex-direction: column;
+}
+.todoelement{
+    display: flex;
+}
