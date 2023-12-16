@@ -1,27 +1,23 @@
 let pageState = `active`
-
 //сам текст
 let textTodo = document.querySelector(".todotext")
 //Добавить
 let addTodoButton = document.querySelector(".add")
 //див с дивом бокса и текста
 let areaTodo = document.querySelector(".todoarea")
-//кнопка удалить
-let deleteTodoButton = document.querySelector(".delete")
-//кнопка конфирм
-let confirmButton = document.querySelector(".confirm")
 
+//переменнные
+let deleteTodoButton = document.querySelector(".delete")
+let confirmButton = document.querySelector(".confirm")
 let showHiddenButton = document.querySelector(".change")
-//Клик добавить
+//кнопки
 addTodoButton.addEventListener('click',addNewTodo)
-//клик удалить
 deleteTodoButton.addEventListener('click',deleteTodos)
-//клик завершить
 confirmButton.addEventListener('click',confirmTodo)
 showHiddenButton.addEventListener('click',showHidden)
-
-let arrayActivTodo = []
-let arrayInactiveTodo = []
+//Массивы
+let arrayActivTodo = JSON.parse(localStorage.getItem('activ')) ? JSON.parse(localStorage.getItem('activ')) : []
+let arrayInactiveTodo = JSON.parse(localStorage.getItem('unactiv')) ? JSON.parse(localStorage.getItem('unactiv')) : []
 
 function confirmTodo(){
     //див внутри дива
@@ -43,13 +39,10 @@ function confirmTodo(){
                     arrayInactiveTodo.push(textInDiv)
                     let newArray = arrayActivTodo.filter((active) => active !== textInDiv )
                     arrayActivTodo = newArray 
-                    console.log(arrayActivTodo)
                 }else{
                     arrayActivTodo.push(textInDiv)
-                    //console.log(arrayInactiveTodo)
                     let newArray = arrayInactiveTodo.filter((active) => active !== textInDiv )
                     arrayInactiveTodo = newArray 
-                    console.log(arrayActivTodo)
                 }
             }
         }
@@ -64,12 +57,17 @@ function deleteTodos(){
     let checkboxToDelete = document.querySelectorAll(".checkmeout")
     checkboxToDelete.forEach(element => {
         console.log(element.checked)
-        if (element.checked){
+        if (element.checked && pageState == `active`){
             let elementToDeleteFromArray = element.parentNode.querySelector(".todotext").innerHTML
             let newArray = arrayActivTodo.filter((active) => active !== elementToDeleteFromArray)
             element.parentNode.parentNode.removeChild(element.parentNode);
             arrayActivTodo = newArray
             console.log(arrayActivTodo)
+        }else if (element.checked && pageState == `unactive`){
+            let elementToDeleteFromArray = element.parentNode.querySelector(".todotext").innerHTML
+            let newArrayInactiv = arrayInactiveTodo.filter((active) => active !== elementToDeleteFromArray)
+            element.parentNode.parentNode.removeChild(element.parentNode);
+            arrayInactiveTodo = newArrayInactiv
         }
         
     });
@@ -95,4 +93,15 @@ function showHidden(){
         });
         pageState = `unactive`
     }
+}
+console.log(arrayActivTodo)
+arrayActivTodo.forEach(element=>{
+    areaTodo.innerHTML+= `<div class="todoelement"><input type="checkbox" class="checkmeout"><div class="todotext">${element}</div></div>`
+})
+
+
+window.onbeforeunload = closingCode;
+function closingCode(){
+    localStorage.setItem('activ',JSON.stringify(arrayActivTodo))
+    localStorage.setItem('unactiv',JSON.stringify(arrayInactiveTodo))
 }
